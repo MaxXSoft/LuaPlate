@@ -112,20 +112,33 @@ setmetatable(obj.Camera, {
   end
 })
 
-function obj.Camera.new()
+--- constructor
+-- @param from    position of camera
+-- @param look_at direction of camera #1
+-- @param up      direction of camera #2
+-- @param fov     field of view in degress
+-- @param aspect  aspect of field
+function obj.Camera.new(from, look_at, up, fov, aspect)
   local self = setmetatable({}, obj.Camera)
+  -- calculate some parameters
+  local theta = fov * math.pi / 180
+  local half_height = math.tan(theta / 2)
+  local half_width = aspect * half_height
+  local w = (from - look_at):norm()
+  local u = up:cross(w):norm()
+  local v = w:cross(u)
   -- initialize scan vectors
-  self.lower_left = data.Vec3(-2, -1, -1)
-  self.horizontal = data.Vec3(4, 0, 0)
-  self.vertical = data.Vec3(0, 2, 0)
-  self.origin = data.Vec3(0, 0, 0)
+  self.lower_left = from - half_width * u - half_height * v - w
+  self.horizontal = 2 * half_width * u
+  self.vertical = 2 * half_height * v
+  self.origin = from
   return self
 end
 
 -- get current ray by argument 'u' and 'v'
 function obj.Camera:ray(u, v)
-  return data.Ray(self.origin, self.lower_left + u * self.horizontal
-                                               + v * self.vertical)
+  return data.Ray(self.origin, self.lower_left + u * self.horizontal +
+                  v * self.vertical - self.origin)
 end
 
 
