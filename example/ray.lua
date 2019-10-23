@@ -34,12 +34,14 @@ function scene_begin()
 
   -- initialize world & camera
   local world = obj.ObjectList({
-    obj.Sphere(lpd.Vec3(0, 0, -1), 0.5, obj.Diffuse(0.8, 0.3, 0.3)),
+    obj.Sphere(lpd.Vec3(0, 0, -1), 0.5, obj.Diffuse(0.1, 0.2, 0.5)),
     obj.Sphere(lpd.Vec3(0, -100.5, -1), 100, obj.Diffuse(0.8, 0.8, 0)),
-    obj.Sphere(lpd.Vec3(1, 0, -1), 0.5, obj.Metal(0.8, 0.6, 0.2, 0.3)),
-    obj.Sphere(lpd.Vec3(-1, 0, -1), 0.5, obj.Metal(0.8, 0.8, 0.8, 0)),
+    obj.Sphere(lpd.Vec3(1, 0, -1), 0.5, obj.Metal(0.8, 0.6, 0.2)),
+    obj.Sphere(lpd.Vec3(-1, 0, -1), 0.5, obj.Glass(1.5)),
+    obj.Sphere(lpd.Vec3(-1, 0, -1), -0.45, obj.Glass(1.5)),
   })
-  local cam = obj.Camera()
+  local cam = obj.Camera(lpd.Vec3(-2, 2, 1), lpd.Vec3(0, 0, -1),
+                         lpd.Vec3(0, 1, 0), 20, width / height)
 
   for j = 0, height - 1 do
     for i = 0, width - 1 do
