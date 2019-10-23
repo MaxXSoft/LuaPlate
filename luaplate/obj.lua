@@ -185,7 +185,7 @@ function obj.Metal.new(ar, ag, ab, fuzz)
   return self
 end
 
---- scatter of diffuse material
+--- scatter of metal material
 -- @param   ray   input ray
 -- @param   rec   hit record
 -- @return  scatt scattered ray
@@ -203,6 +203,61 @@ function obj.Metal:scatter(ray, rec)
     return scatt, atten
   else
     return nil, nil
+  end
+end
+
+
+--- glass (dielectric) material
+obj.Glass = {}
+obj.Glass.__index = obj.Glass
+
+setmetatable(obj.Glass, {
+  __call = function (self, ...)
+    return self.new(...)
+  end
+})
+
+--- constructor
+-- @param ref_index refractive index of material
+function obj.Glass.new(ref_index)
+  local self = setmetatable({}, obj.Glass)
+  self.ref_index = ref_index
+  return self
+end
+
+--- Schlick's approximation
+local function schlick(cos, ref_index)
+  local r0 = (1 - ref_index) / (1 + ref_index)
+  r0 = r0 ^ 2
+  return r0 + (1 - r0) * (1 - cos) ^ 5
+end
+
+--- scatter of metal material
+-- @param   ray   input ray
+-- @param   rec   hit record
+-- @return  scatt scattered ray
+-- @return  atten vector of attenuation in RGB
+function obj.Glass:scatter(ray, rec)
+  local reflected = ray.d:reflect(rec.norm)
+  local atten = data.Vec3(1, 1, 1)
+  -- determine outward normal vector and nn
+  local out_norm, nn, cos
+  if ray.d:dot(rec.norm) > 0 then
+    out_norm = -rec.norm
+    nn = self.ref_index
+    cos = self.ref_index * ray.d:dot(rec.norm) / ray.d:len()
+  else
+    out_norm = rec.norm
+    nn = 1 / self.ref_index
+    cos = -ray.d:dot(rec.norm) / ray.d:len()
+  end
+  -- do refract
+  local refracted = ray.d:refract(out_norm, nn)
+  local prob = not refracted and 1 or schlick(cos, self.ref_index)
+  if math.random() < prob then
+    return data.Ray(rec.p, reflected), atten
+  else
+    return data.Ray(rec.p, refracted), atten
   end
 end
 
