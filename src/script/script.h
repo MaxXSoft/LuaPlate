@@ -14,6 +14,8 @@ class ScriptHost {
   ScriptHost(std::string_view file) { InitLua(file); }
   ~ScriptHost() { DestroyLua(); }
 
+  // add package path
+  void AddPackagePath(std::string_view path);
   // register a user function
   void RegisterFunction(std::string_view name, ScriptCallback callback);
   // run current script

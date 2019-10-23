@@ -1,6 +1,7 @@
 #include "script/script.h"
 
 #include <stdexcept>
+#include <string>
 
 #include "lua.hpp"
 #include "util/log.h"
@@ -95,6 +96,25 @@ void ScriptHost::PrepareFunctionCall(std::string_view name) const {
 void ScriptHost::DoFuncCall(std::size_t arg_count,
                             std::size_t ret_count) const {
   CheckError(lua_pcall(LUA_VM, arg_count, ret_count, 0));
+}
+
+void ScriptHost::AddPackagePath(std::string_view path) {
+  // get field "path" from table at top of stack (-1)
+  lua_getglobal(LUA_VM, "package");
+  lua_getfield(LUA_VM, -1, "path");
+  // grab path string from top of stack
+  std::string cur_path = lua_tostring(LUA_VM, -1);
+  // add new path
+  cur_path.push_back(';');
+  cur_path.append(path);
+  // get rid of the string on the stack we just pushed
+  lua_pop(LUA_VM, 1);
+  // push the new one
+  lua_pushstring(LUA_VM, cur_path.c_str());
+  // set the field "path" in table at -2 with value at top of stack
+  lua_setfield(LUA_VM, -2, "path");
+  // get rid of package table from top of stack
+  lua_pop(LUA_VM, 1);
 }
 
 void ScriptHost::RegisterFunction(std::string_view name,
