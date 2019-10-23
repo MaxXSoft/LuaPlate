@@ -6,7 +6,7 @@ LuaPlate provides a canvas to Lua scripts, and allows scripts to draw points, li
 
 The entire project is based on SDL2 and Lua.
 
-## Build LuaPlate
+## Building LuaPlate
 
 First of all, you should place Lua's header files and static library to `lib/lua`. Then run:
 
