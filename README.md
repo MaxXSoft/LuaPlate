@@ -13,12 +13,14 @@ First of all, you should place Lua's header files and static library to `lib/lua
 ```
 mkdir build
 cd build && cmake ..
+make -j8
 ```
 
 LuaPlate can also build with LuaJIT. You can put related files into `lib/luajit` and run:
 
 ```
 cd build && cmake -DUSE_LUAJIT=1 ..
+make -j8
 ```
 
 ## Copyright and License
