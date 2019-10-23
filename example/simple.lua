@@ -11,7 +11,7 @@ local tri = lpd.Tri(lpd.Vec3(50, 0), lpd.Vec3(0, 150), lpd.Vec3(150, 100))
 
 local function update_rect()
   draw.solid(rp, rw, rh, lpd.BLACK)
-  rp.x = rp.x > width and -100 or rp.x + 3
+  rp.x = rp.x > width  and -100 or rp.x + 3
   rp.y = rp.y > height and -100 or rp.y + 3
 end
 
