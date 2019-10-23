@@ -75,7 +75,7 @@ end
 --- cross product
 function data.Vec3:cross(rhs)
   return data.Vec3(self.y * rhs.z - self.z * rhs.y,
-                   self.z * rhs.x - self.x - rhs.z,
+                   self.z * rhs.x - self.x * rhs.z,
                    self.x * rhs.y - self.y * rhs.x)
 end
 
