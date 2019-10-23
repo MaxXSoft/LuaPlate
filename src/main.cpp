@@ -128,6 +128,7 @@ int main(int argc, const char *argv[]) {
 
   // initialize script engine
   ScriptHost host(input);
+  host.AddPackagePath("./?/init.lua");
   RegisterFunctions(host, canvas);
   host.Run();
 
