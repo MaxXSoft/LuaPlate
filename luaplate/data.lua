@@ -89,19 +89,31 @@ function data.Vec3:len()
   return math.sqrt(self.x ^ 2 + self.y ^ 2 + self.z ^ 2)
 end
 
---- self normalize
+--- return a normalized vector
 function data.Vec3:norm()
   local k = 1 / math.sqrt(self.x ^ 2 + self.y ^ 2 + self.z ^ 2)
-  self.x = self.x * k
-  self.y = self.y * k
-  self.z = self.z * k
-  return self
+  return data.Vec3(self.x * k, self.y * k, self.z * k)
 end
 
 --- get reflected vector by specific normal vector
 function data.Vec3:reflect(norm)
   local dot = self.x * norm.x + self.y * norm.y + self.z * norm.z
   return self - 2 * dot * norm
+end
+
+--- get refracted vector by specific normal vector
+-- @param norm  normal vector
+-- @param nn    ni over nt, which n is refractive index
+-- @return      nil if is total internal reflection
+function data.Vec3:refract(norm, nn)
+  local uv = self:norm()
+  local dt = uv:dot(norm)
+  local det = 1 - nn ^ 2 * (1 - dt ^ 2)
+  if det > 0 then
+    return nn * (uv - norm * dt) - norm * math.sqrt(det)
+  else
+    return nil
+  end
 end
 
 
