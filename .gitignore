@@ -38,4 +38,6 @@ build
 debug
 
 # libraries
-lib
+lib/*/*.h
+lib/*/*.hpp
+lib/*/*.a
