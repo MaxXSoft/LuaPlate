@@ -31,6 +31,16 @@ function data.Vec3.rand_unit_sphere()
   return p
 end
 
+--- make a random vector which is inside of unit disk
+function data.Vec3.rand_unit_disk()
+  local p
+  repeat
+    p = 2 * data.Vec3(math.random(), math.random(), 0)
+    p = p - data.Vec3(1, 1, 0)
+  until p:dot(p) < 1
+  return p
+end
+
 function data.Vec3.__tostring(self)
   return '(' .. self.x .. ', ' .. self.y .. ', ' .. self.z .. ')'
 end
