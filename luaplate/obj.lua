@@ -113,13 +113,22 @@ setmetatable(obj.Camera, {
 })
 
 --- constructor
--- @param from    position of camera
--- @param look_at direction of camera #1
--- @param up      direction of camera #2
--- @param fov     field of view in degress
--- @param aspect  aspect of field
-function obj.Camera.new(from, look_at, up, fov, aspect)
+-- @param from      position of camera
+-- @param look_at   direction of camera #1
+-- @param up        direction of camera #2
+-- @param fov       field of view in degress
+-- @param aspect    aspect of field
+-- @param aperture  aperture of camera
+-- @param focus     focus distance
+function obj.Camera.new(from, look_at, up, fov, aspect, aperture, focus)
   local self = setmetatable({}, obj.Camera)
+  from = from or data.Vec3(0, 0, 0)
+  look_at = look_at or data.Vec3(0, 0, -1)
+  up = up or data.Vec3(0, 1, 0)
+  fov = fov or 90
+  aspect = aspect or 2
+  aperture = aperture or 0
+  focus = focus or 1
   -- calculate some parameters
   local theta = fov * math.pi / 180
   local half_height = math.tan(theta / 2)
@@ -128,17 +137,22 @@ function obj.Camera.new(from, look_at, up, fov, aspect)
   local u = up:cross(w):norm()
   local v = w:cross(u)
   -- initialize scan vectors
-  self.lower_left = from - half_width * u - half_height * v - w
-  self.horizontal = 2 * half_width * u
-  self.vertical = 2 * half_height * v
+  self.lower_left = from - (half_width * u + half_height * v + w) * focus
+  self.horizontal = 2 * half_width * focus * u
+  self.vertical = 2 * half_height * focus * v
   self.origin = from
+  self.lens_radius = aperture / 2
+  self.u, self.v, self.w = u, v, w
   return self
 end
 
 -- get current ray by argument 'u' and 'v'
 function obj.Camera:ray(u, v)
-  return data.Ray(self.origin, self.lower_left + u * self.horizontal +
-                  v * self.vertical - self.origin)
+  local rd = self.lens_radius * data.Vec3.rand_unit_disk()
+  local offset = self.u * rd.x + self.v * rd.y
+  return data.Ray(self.origin + offset,
+                  self.lower_left + u * self.horizontal +
+                  v * self.vertical - self.origin - offset)
 end
 
 
